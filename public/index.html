@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Danapor — Masuk ke Akun Anda</title>
+  <meta name="description" content="Danapor - Aplikasi pencatat keuangan pribadi. Kelola pemasukan dan pengeluaran Anda dengan mudah.">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="auth-container">
+    <!-- Hero Side -->
+    <section class="auth-hero">
+      <div style="position:relative;z-index:1;">
+        <div class="hero-badge">
+          <span class="material-symbols-outlined" style="font-size:1rem;margin-right:0.5rem;">shield</span>
+          Keamanan Terjamin
+        </div>
+        <h1>
+          Atur Keuanganmu<br>
+          Dengan <span class="gradient-text">Cerdas.</span>
+        </h1>
+        <p>
+          Platform pencatat keuangan yang dirancang untuk membantu Anda mengelola uang cash dan digital dalam satu tempat yang aman dan intuitif.
+        </p>
+      </div>
+      <span class="material-symbols-outlined hero-deco">account_balance_wallet</span>
+    </section>
+
+    <!-- Form Side -->
+    <section class="auth-form-side">
+      <div style="max-width: 420px; width: 100%; margin: 0 auto;">
+        <div class="auth-brand">
+          <span class="material-symbols-outlined icon filled">account_balance_wallet</span>
+          <span class="name">Danapor</span>
+        </div>
+
+        <h2 class="auth-title animate-fade-in">Selamat Datang</h2>
+        <p class="auth-subtitle animate-fade-in animate-fade-in-delay-1">Masuk ke akun Anda untuk melanjutkan.</p>
+
+        <div class="error-msg" id="error-msg">
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">error</span>
+          <span id="error-text"></span>
+        </div>
+
+        <form class="auth-form animate-fade-in animate-fade-in-delay-2" id="login-form">
+          <div class="input-group">
+            <label for="email">Email</label>
+            <div class="input-icon-wrapper">
+              <span class="material-symbols-outlined icon-left">mail</span>
+              <input class="input" id="email" name="email" type="email" placeholder="nama@email.com" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="password">Password</label>
+            <div class="input-icon-wrapper">
+              <span class="material-symbols-outlined icon-left">lock</span>
+              <input class="input" id="password" name="password" type="password" placeholder="••••••••" required autocomplete="current-password">
+              <button type="button" class="icon-right" id="toggle-password" tabindex="-1">
+                <span class="material-symbols-outlined">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-full" id="submit-btn">
+            <span id="btn-text">Masuk</span>
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
+        </form>
+
+        <p class="auth-footer animate-fade-in animate-fade-in-delay-3">
+          Belum punya akun? <a href="/register">Daftar Sekarang</a>
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <script src="/js/auth.js"></script>
+</body>
+</html>

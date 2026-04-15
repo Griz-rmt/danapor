@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register | Danapor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Work+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#1a1c1e",
+                        "surface-container-highest": "#e2e2e5",
+                        "secondary-fixed": "#ffdcc2",
+                        "inverse-on-surface": "#f0f0f3",
+                        "outline": "#727783",
+                        "background": "#f9f9fc",
+                        "on-secondary-container": "#623400",
+                        "secondary": "#8f4e00",
+                        "secondary-fixed-dim": "#ffb77a",
+                        "on-background": "#1a1c1e",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e2e2e5",
+                        "tertiary-fixed-dim": "#91d78a",
+                        "tertiary-container": "#2b6d2d",
+                        "surface-container-high": "#e8e8ea",
+                        "surface": "#f9f9fc",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary": "#0e5417",
+                        "surface-tint": "#005db5",
+                        "primary-container": "#005fb8",
+                        "on-surface-variant": "#424752",
+                        "primary-fixed-dim": "#a8c8ff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#2f3133",
+                        "on-secondary-fixed": "#2e1500",
+                        "secondary-container": "#ff8f00",
+                        "surface-container-low": "#f3f3f6",
+                        "primary-fixed": "#d6e3ff",
+                        "tertiary-fixed": "#acf4a4",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#001b3d",
+                        "on-tertiary-container": "#a5ec9d",
+                        "primary": "#00488d",
+                        "surface-container": "#eeeef0",
+                        "surface-bright": "#f9f9fc",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#002203",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#dadadc",
+                        "on-primary-fixed-variant": "#00468b",
+                        "on-primary-container": "#cadcff",
+                        "on-tertiary-fixed-variant": "#0c5216",
+                        "inverse-primary": "#a8c8ff",
+                        "on-secondary-fixed-variant": "#6d3a00",
+                        "outline-variant": "#c2c6d4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Work Sans"],
+                        "label": ["Work Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background-color: #f9f9fc;
+        }
+        .headline-font {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex items-center justify-center p-6">
+<!-- Auth Layout Wrapper -->
+<main class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 bg-surface-container-lowest rounded-[2rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.06)]">
+<!-- Branding Section (Editorial Visual) -->
+<section class="hidden md:flex flex-col justify-between p-12 bg-primary relative overflow-hidden">
+<!-- Decorative Gradient Overlay -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary to-primary-container opacity-90"></div>
+<div class="relative z-10">
+<h1 class="headline-font text-4xl font-extrabold tracking-tighter text-on-primary">Danapor</h1>
+<p class="text-on-primary-container mt-4 font-body text-lg max-w-xs opacity-90">Experience financial clarity through the lens of architectural precision.</p>
+</div>
+<div class="relative z-10 mt-auto">
+<div class="flex items-center gap-4 mb-8">
+<div class="h-1 w-12 bg-tertiary-fixed rounded-full"></div>
+<span class="font-label text-xs uppercase tracking-widest text-on-primary-container">Premium Access</span>
+</div>
+<h2 class="headline-font text-3xl font-bold text-on-primary leading-tight">Master your capital with editorial elegance.</h2>
+</div>
+<!-- Background Image Integration -->
+<div class="absolute bottom-0 right-0 w-full h-full pointer-events-none mix-blend-overlay opacity-20">
+<img alt="abstract architectural lines" class="w-full h-full object-cover" data-alt="abstract architectural minimalist lines and geometric shapes with soft shadows in a monochrome blue aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPptWt-bS7-2va5sDq0se3O53w2nsNx69IMLXY7cDL3QZr2CNiFU2MLKyVBWEixGpPqcCwVA9NqgHOCsDvMvHDntG4bZxUrzZUcihdfLwp9xqaX906RY4uRABtvedVQtQtrfn8uEcGDCRi4PCmh3ffC9zw5mDsqrCLe7qWFI-u3pNChgmsVweRlOKcumSpZJq0ypKfAloHmKlHK8-mUep6WAt_IRiRhR9I5CNThUuwbsedGlXw2Zm-Ei86PNDbLvLSxOZkCfR_pv3N"/>
+</div>
+</section>
+<!-- Registration Form Section -->
+<section class="p-8 md:p-16 flex flex-col justify-center">
+<div class="mb-10">
+<h3 class="headline-font text-2xl font-bold text-on-surface tracking-tight mb-2">Create Account</h3>
+<p class="text-on-surface-variant font-body">Join the elite circle of financial architects.</p>
+</div>
+<form class="space-y-6">
+<!-- Full Name -->
+<div class="space-y-2">
+<label class="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant ml-1">Full Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-xl">person</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary transition-all duration-200" placeholder="Julian Architectural" type="text"/>
+</div>
+</div>
+<!-- Email -->
+<div class="space-y-2">
+<label class="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant ml-1">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-xl">mail</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary transition-all duration-200" placeholder="julian@danapor.com" type="email"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Password -->
+<div class="space-y-2">
+<label class="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant ml-1">Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-xl">lock</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary transition-all duration-200" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- Confirm Password -->
+<div class="space-y-2">
+<label class="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant ml-1">Confirm</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-xl">verified_user</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary transition-all duration-200" placeholder="••••••••" type="password"/>
+</div>
+</div>
+</div>
+<!-- Terms & Conditions -->
+<div class="flex items-start gap-3 py-2">
+<div class="flex items-center h-5">
+<input class="w-5 h-5 text-primary border-outline-variant bg-surface-container-high rounded-lg focus:ring-primary cursor-pointer" id="terms" type="checkbox"/>
+</div>
+<label class="text-sm font-body text-on-surface-variant leading-tight cursor-pointer" for="terms">
+                        I agree to the <a class="text-primary font-semibold hover:underline" href="#">Terms of Service</a> and <a class="text-primary font-semibold hover:underline" href="#">Privacy Policy</a>.
+                    </label>
+</div>
+<!-- Action Button -->
+<button class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary headline-font font-bold rounded-xl shadow-lg shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all duration-200" type="submit">
+                    Sign Up
+                </button>
+<!-- Login Link -->
+<p class="text-center text-sm font-body text-on-surface-variant mt-6">
+                    Already a member? 
+                    <a class="text-primary font-bold hover:underline ml-1" href="#">Log In</a>
+</p>
+</form>
+<!-- Decorative Footer Metadata -->
+<div class="mt-auto pt-12 flex justify-between items-center opacity-40">
+<span class="text-[10px] font-label uppercase tracking-widest">v1.0.2 / secure node</span>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-sm">security</span>
+<span class="material-symbols-outlined text-sm">language</span>
+</div>
+</div>
+</section>
+</main>
+</body></html>

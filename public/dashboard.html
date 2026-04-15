@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Danapor — Dashboard</title>
+  <meta name="description" content="Dashboard keuangan personal Anda. Lihat ringkasan pemasukan, pengeluaran, dan grafik keuangan.">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="material-symbols-outlined brand-icon filled">account_balance_wallet</span>
+      <span class="brand-name">Danapor</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/dashboard" class="nav-link active">
+        <span class="material-symbols-outlined" style="font-size:1.1rem;vertical-align:-2px;margin-right:4px;">grid_view</span>
+        Beranda
+      </a>
+      <a href="/add" class="nav-link">
+        <span class="material-symbols-outlined" style="font-size:1.1rem;vertical-align:-2px;margin-right:4px;">add_circle</span>
+        Tambah
+      </a>
+    </nav>
+    <div class="header-actions">
+      <div class="user-menu">
+        <div class="user-avatar" id="user-avatar" title="Menu Pengguna"></div>
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="user-dropdown-item" id="user-name-display">
+            <span class="material-symbols-outlined">person</span>
+            <span id="dropdown-name">User</span>
+          </div>
+          <button class="user-dropdown-item danger" id="logout-btn">
+            <span class="material-symbols-outlined">logout</span>
+            Keluar
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Summary Cards -->
+      <section class="summary-grid animate-fade-in">
+        <!-- Balance Card -->
+        <div class="balance-card">
+          <p class="label">Total Saldo</p>
+          <h2 class="amount" id="total-balance">Rp 0</h2>
+          <div class="sub-cards">
+            <div class="sub-card">
+              <p class="sub-label">Pemasukan Bulan Ini</p>
+              <p class="sub-amount income" id="monthly-income">+Rp 0</p>
+            </div>
+            <div class="sub-card">
+              <p class="sub-label">Pengeluaran Bulan Ini</p>
+              <p class="sub-amount expense" id="monthly-expense">-Rp 0</p>
+            </div>
+          </div>
+        </div>
+        <!-- Digital Balance -->
+        <div class="money-type-card">
+          <div>
+            <div class="card-icon digital">
+              <span class="material-symbols-outlined">account_balance_wallet</span>
+            </div>
+            <p class="card-label">Saldo Digital</p>
+          </div>
+          <p class="card-amount" id="digital-balance">Rp 0</p>
+        </div>
+        <!-- Cash Balance -->
+        <div class="money-type-card">
+          <div>
+            <div class="card-icon cash">
+              <span class="material-symbols-outlined">payments</span>
+            </div>
+            <p class="card-label">Uang Cash</p>
+          </div>
+          <p class="card-amount" id="cash-balance">Rp 0</p>
+        </div>
+      </section>
+
+      <!-- Charts -->
+      <section class="chart-section animate-fade-in animate-fade-in-delay-1">
+        <div class="charts-grid">
+          <!-- Bar Chart -->
+          <div class="chart-container">
+            <div class="chart-header">
+              <div>
+                <h3>Arus Keuangan</h3>
+                <p>Pemasukan vs Pengeluaran 6 bulan terakhir</p>
+              </div>
+              <div class="chart-legend">
+                <div class="legend-item">
+                  <div class="legend-dot income"></div>
+                  <span>Masuk</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-dot expense"></div>
+                  <span>Keluar</span>
+                </div>
+              </div>
+            </div>
+            <div class="chart-canvas-wrapper">
+              <canvas id="bar-chart"></canvas>
+            </div>
+          </div>
+          <!-- Donut Chart -->
+          <div class="chart-container">
+            <div class="chart-header">
+              <div>
+                <h3>Kategori Pengeluaran</h3>
+                <p>Distribusi bulan ini</p>
+              </div>
+            </div>
+            <div class="chart-canvas-wrapper">
+              <canvas id="donut-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Transactions -->
+      <section class="transaction-section animate-fade-in animate-fade-in-delay-2">
+        <div class="section-header">
+          <h3>Transaksi Terbaru</h3>
+        </div>
+        <div class="transaction-list" id="transaction-list">
+          <div class="empty-state">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <p>Belum ada transaksi. Mulai catat keuangan Anda!</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- FAB (Desktop) -->
+  <a href="/add" class="fab" title="Tambah Transaksi">
+    <span class="material-symbols-outlined">add</span>
+  </a>
+
+  <!-- Bottom Nav (Mobile) -->
+  <nav class="bottom-nav">
+    <a href="/dashboard" class="active">
+      <span class="material-symbols-outlined filled">grid_view</span>
+      <span>Beranda</span>
+    </a>
+    <a href="/add">
+      <span class="material-symbols-outlined">add_circle</span>
+      <span>Tambah</span>
+    </a>
+  </nav>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="material-symbols-outlined toast-icon" id="toast-icon">check_circle</span>
+    <span class="toast-message" id="toast-message"></span>
+  </div>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Danapor - Architect Your Wealth</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;700;800&amp;family=Work+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#1a1c1e",
+                        "surface-container-highest": "#e2e2e5",
+                        "secondary-fixed": "#ffdcc2",
+                        "inverse-on-surface": "#f0f0f3",
+                        "outline": "#727783",
+                        "background": "#f9f9fc",
+                        "on-secondary-container": "#623400",
+                        "secondary": "#8f4e00",
+                        "secondary-fixed-dim": "#ffb77a",
+                        "on-background": "#1a1c1e",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e2e2e5",
+                        "tertiary-fixed-dim": "#91d78a",
+                        "tertiary-container": "#2b6d2d",
+                        "surface-container-high": "#e8e8ea",
+                        "surface": "#f9f9fc",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary": "#0e5417",
+                        "surface-tint": "#005db5",
+                        "primary-container": "#005fb8",
+                        "on-surface-variant": "#424752",
+                        "primary-fixed-dim": "#a8c8ff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#2f3133",
+                        "on-secondary-fixed": "#2e1500",
+                        "secondary-container": "#ff8f00",
+                        "surface-container-low": "#f3f3f6",
+                        "primary-fixed": "#d6e3ff",
+                        "tertiary-fixed": "#acf4a4",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#001b3d",
+                        "on-tertiary-container": "#a5ec9d",
+                        "primary": "#00488d",
+                        "surface-container": "#eeeef0",
+                        "surface-bright": "#f9f9fc",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#002203",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#dadadc",
+                        "on-primary-fixed-variant": "#00468b",
+                        "on-primary-container": "#cadcff",
+                        "on-tertiary-fixed-variant": "#0c5216",
+                        "inverse-primary": "#a8c8ff",
+                        "on-secondary-fixed-variant": "#6d3a00",
+                        "outline-variant": "#c2c6d4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Work Sans"],
+                        "label": ["Work Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .editorial-gradient {
+            background: linear-gradient(135deg, #00488d 0%, #005fb8 100%);
+        }
+        .soft-elevation {
+            box-shadow: 0px 32px 64px -12px rgba(26, 28, 30, 0.06);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background font-body text-on-background min-h-screen flex items-center justify-center p-6 selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- The Shell is suppressed for Transactional Login context as per rules -->
+<main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden bg-surface-container-lowest rounded-[2rem] soft-elevation">
+<!-- Hero Visual Side (Editorial Style) -->
+<section class="hidden lg:flex lg:col-span-7 editorial-gradient relative p-16 flex-col justify-between overflow-hidden">
+<!-- Background Texture Layer -->
+<div class="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+<div class="relative z-10">
+<span class="inline-flex px-4 py-1.5 rounded-full bg-primary-fixed/20 border border-primary-fixed/30 text-primary-fixed text-xs font-semibold tracking-widest uppercase mb-8">
+                    Security Priority
+                </span>
+<h1 class="font-headline font-extrabold text-6xl text-white leading-none tracking-tighter mb-6">
+                    Wealth is a <br/><span class="text-primary-fixed">Masterpiece.</span>
+</h1>
+<p class="text-on-primary-container font-light text-xl max-w-md leading-relaxed">
+                    Designed for those who view financial management as a craft, not a chore. Welcome to the sanctuary of your capital.
+                </p>
+</div>
+<div class="relative z-10 flex items-center gap-8">
+<div class="flex -space-x-4">
+<img alt="User 1" class="w-12 h-12 rounded-full border-4 border-primary" data-alt="Close-up portrait of a professional man with glasses smiling in a studio setting with soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4rInsoNGYikhyMK8adqrK7ZCX3yRJDq7AFlDphuQfcT7wACy5MbSh3sKRNpr4rbBKN2ecaGVmoahof-6dYdFS2YUXY1qL87SjQcNYbrisn9Ut4rBzGtmTAhMVwbIrj4EBAyoPmoZ6146R9bLPNlh-Aqj6h53x_ZWRw9X24e7FPUnu5-r72fuZjdewBWpRTYyaUDhruEyzz2a6NmT6cIOGe8aqfnepJKf5zj-Hiv7QAYfqaFVV7wJECBunvzCB_vjt-6_MZsqpvOHb"/>
+<img alt="User 2" class="w-12 h-12 rounded-full border-4 border-primary" data-alt="Professional woman with minimalist jewelry in a bright office environment with natural daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8w1vvYTcQBC9H_QEfeaHw5MNlZzCn3ycceIaojoY1P9Q6IjhBscvfP5KmgaPDYRoudl29Vk3IBQBqUQU5DEkP4NTzFCp5Xa2hl_NdcPyqtTMLuMRYiQ2TXGKmxZe_DG7VM01iYE6_Y4dyZuX75BuuwpeW9ZdutI4r8ch34NYOKsB7qH9i-Q7WpDIrIIiNwhsO1GPg5-_1GOwULFtSYHCj6Z8P5v5GoEV1yUxOOnZN31ysf_00qYIX4FrXxt6aZfTadpmxxv0rK3n5"/>
+<img alt="User 3" class="w-12 h-12 rounded-full border-4 border-primary" data-alt="Portrait of a young executive looking confident against a blurred architectural background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfWco9nmacpK_EcCagGK_xzdwEDfmOBIKh1gxaGSfl8S6ZuN53Mxyhnm3LAovU2jcl9ec0aeXQ4saAd6jee8PHFZ9i15Mjuyc2BGjaHw9sPEv8cbGQPs-g6ptGA-ivjViSOJTnXk8j7DU-fuGnhr1KUJhRLmSJebfDAj2dLFrCOeOiXyl6PZ89Mtwm3j7OfEdXMl_JwC2_kTZuZykdz6jZeEysqbGoeRu0VduTx8TCO2WppmRGJhAsH6IvFnkfaCR1aR-s47zwJvql"/>
+</div>
+<div class="text-on-primary-container text-sm">
+<span class="block font-bold text-white">Joined by 12,000+</span>
+<span class="opacity-80">Financial Architects globally</span>
+</div>
+</div>
+<!-- Absolute Decorative Image -->
+<div class="absolute -bottom-20 -right-20 w-96 h-96 opacity-20">
+<span class="material-symbols-outlined text-[24rem] text-white select-none">account_balance</span>
+</div>
+</section>
+<!-- Form Side -->
+<section class="col-span-1 lg:col-span-5 p-8 md:p-12 lg:p-20 flex flex-col justify-center">
+<header class="mb-12">
+<!-- Brand Anchor from JSON style_brand_logo -->
+<div class="mb-10 inline-flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-4xl" data-weight="fill">account_balance_wallet</span>
+<span class="text-xl font-extrabold tracking-tighter text-[#00488d] dark:text-[#d1e4ff] font-headline uppercase">Danapor</span>
+</div>
+<h2 class="text-3xl font-headline font-bold text-on-surface mb-2">Welcome Back</h2>
+<p class="text-on-surface-variant">Access your architectural financial dashboard.</p>
+</header>
+<form class="space-y-6">
+<div class="space-y-1.5">
+<label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant font-label px-1" for="email">Email Address</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-xl">mail</span>
+</div>
+<input class="w-full bg-surface-container-high border-none rounded-xl py-4 pl-12 pr-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline transition-all" id="email" placeholder="architect@ledger.com" type="email"/>
+</div>
+</div>
+<div class="space-y-1.5">
+<div class="flex justify-between items-center px-1">
+<label class="text-xs font-bold uppercase tracking-wider text-on-surface-variant font-label" for="password">Password</label>
+<a class="text-xs font-medium text-primary hover:underline transition-all" href="#">Forgot Password?</a>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-xl">lock</span>
+</div>
+<input class="w-full bg-surface-container-high border-none rounded-xl py-4 pl-12 pr-4 text-on-surface focus:ring-2 focus:ring-primary/20 placeholder:text-outline transition-all" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute inset-y-0 right-4 flex items-center text-outline hover:text-primary" type="button">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-3 py-2">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-background bg-surface-container" id="remember" type="checkbox"/>
+<label class="text-sm text-on-surface-variant" for="remember">Remember this device for 30 days</label>
+</div>
+<button class="w-full editorial-gradient text-white font-headline font-bold py-5 rounded-xl text-lg shadow-xl shadow-primary/20 active:scale-[0.98] transition-transform flex items-center justify-center gap-2" type="submit">
+                    Sign In
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</form>
+<div class="mt-10 relative">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-outline-variant/30"></div>
+</div>
+<div class="relative flex justify-center">
+<span class="bg-surface-container-lowest px-4 text-xs font-bold uppercase tracking-[0.2em] text-outline">Or continue with</span>
+</div>
+</div>
+<div class="mt-8 grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 py-4 rounded-xl border border-outline-variant/50 hover:bg-surface-container-low transition-all">
+<img alt="Google" class="w-5 h-5" data-alt="The colorful Google G logo icon on a transparent background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5342OWblzdmNVOsxqk-fsPUGz0iEylm2WzJkPZPPN2w_sCW_7PdOL2oZkQJkzQaLuJqxsUkBjzDGN08B1h_biTnE5WH6DjF9LwunNz8oAAtQMhVWZaMHTk0hQBu_dPQs5_sAUSxMTiTsJR7MCk6fF2S0718-N64dNbgzuQWLiVqlb04f5GE-0ziKV9x6fymfqDWboGv8Xn160Yi42luAq3Z4DBd0Nh3EfFWtVBYhqMqZ-jEW6wIn4jNCZqA7HPoPmm5SlcweIIUNi"/>
+<span class="text-sm font-semibold text-on-surface">Google</span>
+</button>
+<button class="flex items-center justify-center gap-3 py-4 rounded-xl border border-outline-variant/50 hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-2xl text-on-surface">ios</span>
+<span class="text-sm font-semibold text-on-surface">Apple ID</span>
+</button>
+</div>
+<footer class="mt-12 text-center">
+<p class="text-on-surface-variant text-sm">New to Danapor? <a class="text-primary font-bold ml-1 hover:underline decoration-2 underline-offset-4" href="#">Register an Account</a></p>
+</footer>
+</section>
+</main>
+<!-- Background Decorative Elements -->
+<div class="fixed top-0 left-0 -z-10 w-full h-full pointer-events-none overflow-hidden">
+<div class="absolute -top-1/4 -left-1/4 w-[60%] h-[60%] bg-primary-fixed/30 rounded-full blur-[120px]"></div>
+<div class="absolute -bottom-1/4 -right-1/4 w-[60%] h-[60%] bg-secondary-fixed/20 rounded-full blur-[120px]"></div>
+</div>
+</body></html>

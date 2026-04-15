@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Danapor — Daftar Akun Baru</title>
+  <meta name="description" content="Daftar akun Danapor untuk mulai mencatat dan mengelola keuangan Anda.">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="auth-container">
+    <!-- Hero Side -->
+    <section class="auth-hero">
+      <div style="position:relative;z-index:1;">
+        <div class="hero-badge">
+          <span class="material-symbols-outlined" style="font-size:1rem;margin-right:0.5rem;">star</span>
+          Gratis Selamanya
+        </div>
+        <h1>
+          Mulai Perjalanan<br>
+          <span class="gradient-text">Finansialmu.</span>
+        </h1>
+        <p>
+          Buat akun dalam hitungan detik dan mulai kendalikan arus keuangan Anda. Pisahkan uang cash dan digital, pantau setiap transaksi.
+        </p>
+      </div>
+      <span class="material-symbols-outlined hero-deco">savings</span>
+    </section>
+
+    <!-- Form Side -->
+    <section class="auth-form-side">
+      <div style="max-width: 420px; width: 100%; margin: 0 auto;">
+        <div class="auth-brand">
+          <span class="material-symbols-outlined icon filled">account_balance_wallet</span>
+          <span class="name">Danapor</span>
+        </div>
+
+        <h2 class="auth-title animate-fade-in">Buat Akun Baru</h2>
+        <p class="auth-subtitle animate-fade-in animate-fade-in-delay-1">Isi data berikut untuk memulai.</p>
+
+        <div class="error-msg" id="error-msg">
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">error</span>
+          <span id="error-text"></span>
+        </div>
+
+        <div class="success-msg" id="success-msg">
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">check_circle</span>
+          <span id="success-text"></span>
+        </div>
+
+        <form class="auth-form animate-fade-in animate-fade-in-delay-2" id="register-form">
+          <div class="input-group">
+            <label for="name">Nama Lengkap</label>
+            <div class="input-icon-wrapper">
+              <span class="material-symbols-outlined icon-left">person</span>
+              <input class="input" id="name" name="name" type="text" placeholder="Masukkan nama lengkap" required autocomplete="name">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="email">Email</label>
+            <div class="input-icon-wrapper">
+              <span class="material-symbols-outlined icon-left">mail</span>
+              <input class="input" id="email" name="email" type="email" placeholder="nama@email.com" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="password">Password</label>
+            <div class="input-icon-wrapper">
+              <span class="material-symbols-outlined icon-left">lock</span>
+              <input class="input" id="password" name="password" type="password" placeholder="Minimal 6 karakter" required autocomplete="new-password" minlength="6">
+              <button type="button" class="icon-right" id="toggle-password" tabindex="-1">
+                <span class="material-symbols-outlined">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="confirm-password">Konfirmasi Password</label>
+            <div class="input-icon-wrapper">
+              <span class="material-symbols-outlined icon-left">lock</span>
+              <input class="input" id="confirm-password" name="confirm-password" type="password" placeholder="Ulangi password" required autocomplete="new-password">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-full" id="submit-btn">
+            <span id="btn-text">Daftar</span>
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
+        </form>
+
+        <p class="auth-footer animate-fade-in animate-fade-in-delay-3">
+          Sudah punya akun? <a href="/">Masuk di sini</a>
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <script src="/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Danapor — Tambah Transaksi</title>
+  <meta name="description" content="Tambahkan transaksi pemasukan atau pengeluaran baru ke catatan keuangan Anda.">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="material-symbols-outlined brand-icon filled">account_balance_wallet</span>
+      <span class="brand-name">Danapor</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/dashboard" class="nav-link">
+        <span class="material-symbols-outlined" style="font-size:1.1rem;vertical-align:-2px;margin-right:4px;">grid_view</span>
+        Beranda
+      </a>
+      <a href="/add" class="nav-link active">
+        <span class="material-symbols-outlined" style="font-size:1.1rem;vertical-align:-2px;margin-right:4px;">add_circle</span>
+        Tambah
+      </a>
+    </nav>
+    <div class="header-actions">
+      <div class="user-menu">
+        <div class="user-avatar" id="user-avatar" title="Menu Pengguna"></div>
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="user-dropdown-item" id="user-name-display">
+            <span class="material-symbols-outlined">person</span>
+            <span id="dropdown-name">User</span>
+          </div>
+          <button class="user-dropdown-item danger" id="logout-btn">
+            <span class="material-symbols-outlined">logout</span>
+            Keluar
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container" style="max-width: 680px;">
+      <!-- Page Header -->
+      <div class="page-header animate-fade-in">
+        <p class="breadcrumb">Transaksi Baru</p>
+        <h2>Tambah Transaksi</h2>
+      </div>
+
+      <form id="transaction-form">
+        <!-- Type Toggle (Income / Expense) -->
+        <div class="animate-fade-in animate-fade-in-delay-1 mb-6">
+          <div class="toggle-group" id="type-toggle">
+            <button type="button" class="toggle-option active-income" data-value="income">
+              <span class="material-symbols-outlined">arrow_downward</span>
+              Pemasukan
+            </button>
+            <button type="button" class="toggle-option" data-value="expense">
+              <span class="material-symbols-outlined">arrow_upward</span>
+              Pengeluaran
+            </button>
+          </div>
+        </div>
+
+        <!-- Amount Input -->
+        <div class="amount-input-card animate-fade-in animate-fade-in-delay-2 mb-6">
+          <label>Jumlah Transaksi</label>
+          <div class="amount-input-wrapper">
+            <span class="currency">Rp</span>
+            <input type="text" inputmode="numeric" id="amount" placeholder="0" required>
+          </div>
+        </div>
+
+        <!-- Detail Grid -->
+        <div class="form-grid animate-fade-in animate-fade-in-delay-3">
+          <!-- Money Type Toggle (Cash / Digital) -->
+          <div class="input-group">
+            <label>Jenis Uang</label>
+            <div class="toggle-group" id="money-type-toggle">
+              <button type="button" class="toggle-option" data-value="cash">
+                <span class="material-symbols-outlined" style="font-size:1.1rem;">payments</span>
+                Cash
+              </button>
+              <button type="button" class="toggle-option active" data-value="digital">
+                <span class="material-symbols-outlined" style="font-size:1.1rem;">credit_card</span>
+                Digital
+              </button>
+            </div>
+          </div>
+
+          <!-- Source/Place -->
+          <div class="input-group" id="source-group">
+            <label for="source" id="source-label">Sumber Digital</label>
+            <select class="input" id="source">
+              <option value="">Pilih sumber...</option>
+              <option value="GoPay">GoPay</option>
+              <option value="OVO">OVO</option>
+              <option value="DANA">DANA</option>
+              <option value="ShopeePay">ShopeePay</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+
+          <!-- Date -->
+          <div class="input-group">
+            <label for="date">Tanggal</label>
+            <div class="input-icon-wrapper">
+              <span class="material-symbols-outlined icon-left">calendar_today</span>
+              <input class="input" type="date" id="date" required>
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div class="input-group form-full">
+            <label>Kategori</label>
+            <div class="category-grid" id="category-grid">
+              <div class="category-item" data-category="Makanan">
+                <span class="material-symbols-outlined">restaurant</span>
+                <span class="cat-label">Makanan</span>
+              </div>
+              <div class="category-item" data-category="Transport">
+                <span class="material-symbols-outlined">commute</span>
+                <span class="cat-label">Transport</span>
+              </div>
+              <div class="category-item" data-category="Belanja">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span class="cat-label">Belanja</span>
+              </div>
+              <div class="category-item" data-category="Tagihan">
+                <span class="material-symbols-outlined">receipt_long</span>
+                <span class="cat-label">Tagihan</span>
+              </div>
+              <div class="category-item" data-category="Hiburan">
+                <span class="material-symbols-outlined">sports_esports</span>
+                <span class="cat-label">Hiburan</span>
+              </div>
+              <div class="category-item" data-category="Kesehatan">
+                <span class="material-symbols-outlined">health_and_safety</span>
+                <span class="cat-label">Kesehatan</span>
+              </div>
+              <div class="category-item" data-category="Pendidikan">
+                <span class="material-symbols-outlined">school</span>
+                <span class="cat-label">Pendidikan</span>
+              </div>
+              <div class="category-item" data-category="Gaji">
+                <span class="material-symbols-outlined">work</span>
+                <span class="cat-label">Gaji</span>
+              </div>
+              <div class="category-item active" data-category="Lainnya">
+                <span class="material-symbols-outlined">more_horiz</span>
+                <span class="cat-label">Lainnya</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="input-group form-full">
+            <label for="description">Catatan (Opsional)</label>
+            <textarea class="input" id="description" rows="3" placeholder="Deskripsi singkat transaksi..."></textarea>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-8 animate-fade-in animate-fade-in-delay-4">
+          <button type="submit" class="btn btn-primary btn-lg btn-full" id="submit-btn">
+            <span class="material-symbols-outlined">check_circle</span>
+            <span id="btn-text">Simpan Transaksi</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Bottom Nav (Mobile) -->
+  <nav class="bottom-nav">
+    <a href="/dashboard">
+      <span class="material-symbols-outlined">grid_view</span>
+      <span>Beranda</span>
+    </a>
+    <a href="/add" class="active">
+      <span class="material-symbols-outlined filled">add_circle</span>
+      <span>Tambah</span>
+    </a>
+  </nav>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="material-symbols-outlined toast-icon" id="toast-icon">check_circle</span>
+    <span class="toast-message" id="toast-message"></span>
+  </div>
+
+  <script src="/js/add-transaction.js"></script>
+</body>
+</html>
