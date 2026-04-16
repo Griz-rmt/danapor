@@ -1313,7 +1313,7 @@ textarea.input {
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--text-primary);
-  width: 200px;
+  width: 100%;
   text-align: left;
 }
 
