@@ -394,6 +394,11 @@ select.input {
   padding-right: 2.5rem;
 }
 
+select.input option {
+  background-color: var(--bg-card-solid);
+  color: var(--text-primary);
+}
+
 textarea.input {
   resize: vertical;
   min-height: 80px;
