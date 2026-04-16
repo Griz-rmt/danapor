@@ -1,20 +1,24 @@
-const { db } = require('./firebase-config');
+const { databases, sdk } = require('./appwrite-config');
 
 async function initDatabase() {
-  if (!db) {
-    console.error('❌ Firestore not initialized. Check your credentials.');
+  if (!process.env.APPWRITE_PROJECT_ID) {
+    console.error('❌ Appwrite not initialized. Missing APPWRITE_PROJECT_ID.');
     return null;
   }
-  console.log('✅ Connected to Firebase Firestore');
-  return db;
+  console.log('✅ Connected to Appwrite Cloud');
+  return databases;
 }
 
 function getDb() {
-  return db;
+  return databases;
+}
+
+function getAppwriteSdk() {
+  return sdk;
 }
 
 function saveDatabase() {
-  // Firestore auto-saves, no-op for compatibility
+  // Appwrite auto-saves, no-op for compatibility
 }
 
-module.exports = { initDatabase, getDb, saveDatabase };
+module.exports = { initDatabase, getDb, saveDatabase, getAppwriteSdk };

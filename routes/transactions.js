@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getDb } = require('../db');
+const { getDb, getAppwriteSdk } = require('../db');
 
 // Auth middleware
 function requireAuth(req, res, next) {
@@ -21,54 +21,78 @@ function getMonthYear(dateStr) {
   };
 }
 
+function getAppwriteDbInfo() {
+  return {
+    databaseId: process.env.APPWRITE_DATABASE_ID,
+    transactionsCollectionId: process.env.TRANSACTIONS_COLLECTION_ID,
+  };
+}
+
 // Get all transactions for user (with optional filters)
 router.get('/', async (req, res) => {
   try {
-    const db = getDb();
+    const databases = getDb();
+    const sdk = getAppwriteSdk();
     const userId = req.session.userId;
     const { month, year, type, money_type } = req.query;
 
-    let query = db.collection('transactions').where('user_id', '==', userId);
+    if (!databases || !sdk) return res.status(500).json({ error: 'Database not initialized' });
+    const { databaseId, transactionsCollectionId } = getAppwriteDbInfo();
+
+    let queries = [sdk.Query.equal('user_id', userId)];
 
     if (month && year) {
-      query = query.where('month', '==', month.padStart(2, '0')).where('year', '==', year);
+      queries.push(sdk.Query.equal('month', month.padStart(2, '0')));
+      queries.push(sdk.Query.equal('year', year));
     } else if (year) {
-      query = query.where('year', '==', year);
+      queries.push(sdk.Query.equal('year', year));
     }
 
     if (type) {
-      query = query.where('type', '==', type);
+      queries.push(sdk.Query.equal('type', type));
     }
 
     if (money_type) {
-      query = query.where('money_type', '==', money_type);
+      queries.push(sdk.Query.equal('money_type', money_type));
     }
 
-    // Sort by date desc
-    const snapshot = await query.orderBy('date', 'desc').orderBy('created_at', 'desc').get();
+    // Since Appwrite requires indexes for ordering, we'll try to apply but fallback to manual sort if it fails in case user hasn't setup index.
+    queries.push(sdk.Query.orderDesc('date'));
+    queries.push(sdk.Query.orderDesc('created_at'));
+    queries.push(sdk.Query.limit(100)); // Default limit
 
-    const transactions = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    const snapshot = await databases.listDocuments(
+      databaseId,
+      transactionsCollectionId,
+      queries
+    );
+
+    const transactions = snapshot.documents.map(doc => {
+      const { $id, $collectionId, $databaseId, $createdAt, $updatedAt, $permissions, ...data } = doc;
+      return { id: $id, ...data };
+    });
 
     res.json(transactions);
   } catch (err) {
     console.error('Get transactions error:', err);
-    res.status(500).json({ error: 'Terjadi kesalahan server. Pastikan index Firestore sudah dibuat.' });
+    res.status(500).json({ error: err.message || 'Terjadi kesalahan server.' });
   }
 });
 
 // Add new transaction
 router.post('/', async (req, res) => {
   try {
-    const db = getDb();
+    const databases = getDb();
+    const sdk = getAppwriteSdk();
     const userId = req.session.userId;
     const { type, amount, money_type, source, category, description, date } = req.body;
 
     if (!type || !amount || !money_type || !date) {
       return res.status(400).json({ error: 'Field wajib harus diisi (type, amount, money_type, date)' });
     }
+
+    if (!databases || !sdk) return res.status(500).json({ error: 'Database not initialized' });
+    const { databaseId, transactionsCollectionId } = getAppwriteDbInfo();
 
     const { month, year } = getMonthYear(date);
 
@@ -86,11 +110,16 @@ router.post('/', async (req, res) => {
       created_at: new Date().toISOString()
     };
 
-    const docRef = await db.collection('transactions').add(newTransaction);
+    const doc = await databases.createDocument(
+      databaseId,
+      transactionsCollectionId,
+      sdk.ID.unique(),
+      newTransaction
+    );
     
     res.json({ 
       success: true, 
-      transaction: { id: docRef.id, ...newTransaction } 
+      transaction: { id: doc.$id, ...newTransaction } 
     });
   } catch (err) {
     console.error('Add transaction error:', err);
@@ -101,21 +130,36 @@ router.post('/', async (req, res) => {
 // Delete transaction
 router.delete('/:id', async (req, res) => {
   try {
-    const db = getDb();
+    const databases = getDb();
+    const sdk = getAppwriteSdk();
     const userId = req.session.userId;
     const { id } = req.params;
 
-    const docRef = db.collection('transactions').doc(id);
-    const doc = await docRef.get();
+    if (!databases || !sdk) return res.status(500).json({ error: 'Database not initialized' });
+    const { databaseId, transactionsCollectionId } = getAppwriteDbInfo();
 
-    if (!doc.exists || doc.data().user_id !== userId) {
+    const doc = await databases.getDocument(
+      databaseId,
+      transactionsCollectionId,
+      id
+    );
+
+    if (doc.user_id !== userId) {
       return res.status(404).json({ error: 'Transaksi tidak ditemukan' });
     }
 
-    await docRef.delete();
+    await databases.deleteDocument(
+      databaseId,
+      transactionsCollectionId,
+      id
+    );
+
     res.json({ success: true });
   } catch (err) {
     console.error('Delete transaction error:', err);
+    if (err.code === 404) {
+      return res.status(404).json({ error: 'Transaksi tidak ditemukan' });
+    }
     res.status(500).json({ error: 'Terjadi kesalahan server' });
   }
 });
@@ -123,14 +167,26 @@ router.delete('/:id', async (req, res) => {
 // Get summary
 router.get('/summary', async (req, res) => {
   try {
-    const db = getDb();
+    const databases = getDb();
+    const sdk = getAppwriteSdk();
     const userId = req.session.userId;
+
+    if (!databases || !sdk) return res.status(500).json({ error: 'Database not initialized' });
+    const { databaseId, transactionsCollectionId } = getAppwriteDbInfo();
 
     const now = new Date();
     const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
     const currentYear = String(now.getFullYear());
 
-    const snapshot = await db.collection('transactions').where('user_id', '==', userId).get();
+    // In a real app we might paginate or aggregate on server, but for simplicity we fetch max points. Appwrite listDocuments max limit is 5000.
+    const snapshot = await databases.listDocuments(
+      databaseId,
+      transactionsCollectionId,
+      [
+        sdk.Query.equal('user_id', userId),
+        sdk.Query.limit(5000)
+      ]
+    );
     
     let monthlyIncome = 0;
     let monthlyExpense = 0;
@@ -141,8 +197,7 @@ router.get('/summary', async (req, res) => {
     let digitalIncome = 0;
     let digitalExpense = 0;
 
-    snapshot.forEach(doc => {
-      const data = doc.data();
+    snapshot.documents.forEach(data => {
       const amount = data.amount;
 
       if (data.type === 'income') {
@@ -176,11 +231,23 @@ router.get('/summary', async (req, res) => {
 // Get chart data
 router.get('/chart-data', async (req, res) => {
   try {
-    const db = getDb();
+    const databases = getDb();
+    const sdk = getAppwriteSdk();
     const userId = req.session.userId;
 
-    const snapshot = await db.collection('transactions').where('user_id', '==', userId).get();
-    const allTransactions = snapshot.docs.map(doc => doc.data());
+    if (!databases || !sdk) return res.status(500).json({ error: 'Database not initialized' });
+    const { databaseId, transactionsCollectionId } = getAppwriteDbInfo();
+
+    const snapshot = await databases.listDocuments(
+      databaseId,
+      transactionsCollectionId,
+      [
+        sdk.Query.equal('user_id', userId),
+        sdk.Query.limit(5000)
+      ]
+    );
+    
+    const allTransactions = snapshot.documents;
 
     // Last 6 months labels
     const months = [];
