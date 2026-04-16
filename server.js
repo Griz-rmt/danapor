@@ -46,11 +46,17 @@ app.get('/add', (req, res) => {
 });
 
 // Start server
-async function start() {
-  await initDatabase();
-  app.listen(PORT, () => {
-    console.log(`🚀 Danapor berjalan di http://localhost:${PORT}`);
-  });
+if (process.env.NODE_ENV !== 'production') {
+  async function start() {
+    await initDatabase();
+    app.listen(PORT, () => {
+      console.log(`🚀 Danapor berjalan di http://localhost:${PORT}`);
+    });
+  }
+  start();
+} else {
+  // For Vercel, we need to export the app and ensure DB is initialized
+  initDatabase().catch(err => console.error('DB Init Error:', err));
 }
 
-start();
+module.exports = app;
