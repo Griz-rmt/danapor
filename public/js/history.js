@@ -2,9 +2,12 @@
 // Danapor — History Logic
 // ===========================
 
+let allTransactions = [];
+
 document.addEventListener('DOMContentLoaded', () => {
   checkAuth();
   setupUserMenu();
+  setupSorting();
 });
 
 async function checkAuth() {
@@ -64,8 +67,8 @@ async function loadHistory() {
   try {
     const res = await fetch('/api/transactions');
     if (res.ok) {
-      const transactions = await res.json();
-      renderTransactions(transactions);
+      allTransactions = await res.json();
+      sortAndRender();
     } else {
       showErrorState();
     }
@@ -73,6 +76,39 @@ async function loadHistory() {
     console.error('History load error:', err);
     showErrorState();
   }
+}
+
+function setupSorting() {
+  const sortSelect = document.getElementById('sort-select');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', () => {
+      sortAndRender();
+    });
+  }
+}
+
+function sortAndRender() {
+  const sortValue = document.getElementById('sort-select') ? document.getElementById('sort-select').value : 'newest';
+  
+  let sorted = [...allTransactions];
+  
+  switch(sortValue) {
+    case 'newest':
+      // Backup with created_at if same date
+      sorted.sort((a, b) => new Date(b.date) - new Date(a.date) || new Date(b.created_at) - new Date(a.created_at));
+      break;
+    case 'oldest':
+      sorted.sort((a, b) => new Date(a.date) - new Date(b.date) || new Date(a.created_at) - new Date(b.created_at));
+      break;
+    case 'highest':
+      sorted.sort((a, b) => b.amount - a.amount);
+      break;
+    case 'lowest':
+      sorted.sort((a, b) => a.amount - b.amount);
+      break;
+  }
+  
+  renderTransactions(sorted);
 }
 
 function formatRupiah(amount) {
@@ -113,7 +149,12 @@ function renderTransactions(transactions) {
     const typeClass = isIncome ? 'income' : 'expense';
     const moneyLabel = tx.money_type === 'cash' ? 'Cash' : 'Digital';
     const sourceLabel = tx.source ? ` • ${tx.source}` : '';
-    const dateStr = new Date(tx.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    const dateObj = new Date(tx.date);
+    let dateStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    if (tx.date.includes('T')) {
+      const timeStr = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+      dateStr += ` • ${timeStr}`;
+    }
 
     return `
       <div class="transaction-item animate-slide-up" data-id="${tx.id}">

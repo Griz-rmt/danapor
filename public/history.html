@@ -55,7 +55,15 @@
         <p style="color: var(--text-muted); font-size: 0.9rem;">Semua riwayat pengeluaran dan pemasukan Anda.</p>
       </div>
 
-      <!-- Filter Controls (In future can add month filters here) -->
+      <!-- Filter Controls -->
+      <div class="filter-controls" style="margin-bottom: 1.25rem; display: flex; justify-content: flex-end;">
+        <select id="sort-select" class="input" style="width: auto; padding: 0.5rem 2.5rem 0.5rem 1rem; border-radius: var(--radius-md); font-size: 0.85rem; background-position: right 0.75rem center;">
+          <option value="newest">Paling Baru</option>
+          <option value="oldest">Paling Lama</option>
+          <option value="highest">Terbesar</option>
+          <option value="lowest">Terkecil</option>
+        </select>
+      </div>
 
       <!-- Transactions List -->
       <section class="transaction-section animate-fade-in animate-fade-in-delay-1" style="margin-top:0;">

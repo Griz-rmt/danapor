@@ -317,7 +317,12 @@ function renderTransactions(transactions) {
     const typeClass = isIncome ? 'income' : 'expense';
     const moneyLabel = tx.money_type === 'cash' ? 'Cash' : 'Digital';
     const sourceLabel = tx.source ? ` • ${tx.source}` : '';
-    const dateStr = new Date(tx.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    const dateObj = new Date(tx.date);
+    let dateStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    if (tx.date.includes('T')) {
+      const timeStr = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+      dateStr += ` • ${timeStr}`;
+    }
 
     return `
       <div class="transaction-item animate-slide-up" data-id="${tx.id}">
