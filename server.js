@@ -1,5 +1,5 @@
 const express = require('express');
-const session = require('express-session');
+const cookieSession = require('cookie-session');
 const path = require('path');
 const { initDatabase } = require('./db');
 
@@ -9,13 +9,10 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(session({
-  secret: 'danapor-secret-key-2024',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
-  }
+app.use(cookieSession({
+  name: 'session',
+  keys: ['danapor-secret-key-2024'],
+  maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
 }));
 
 // Static files
