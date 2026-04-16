@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getDb, saveDatabase } = require('../db');
+const { getDb } = require('../db');
 
 // Auth middleware
 function requireAuth(req, res, next) {
@@ -12,58 +12,55 @@ function requireAuth(req, res, next) {
 
 router.use(requireAuth);
 
+// Helper to get month and year from YYYY-MM-DD
+function getMonthYear(dateStr) {
+  const parts = dateStr.split('-');
+  return {
+    year: parts[0],
+    month: parts[1]
+  };
+}
+
 // Get all transactions for user (with optional filters)
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const db = getDb();
     const userId = req.session.userId;
     const { month, year, type, money_type } = req.query;
 
-    let query = 'SELECT * FROM transactions WHERE user_id = ?';
-    const params = [userId];
+    let query = db.collection('transactions').where('user_id', '==', userId);
 
     if (month && year) {
-      query += " AND strftime('%m', date) = ? AND strftime('%Y', date) = ?";
-      params.push(month.padStart(2, '0'), year);
+      query = query.where('month', '==', month.padStart(2, '0')).where('year', '==', year);
     } else if (year) {
-      query += " AND strftime('%Y', date) = ?";
-      params.push(year);
+      query = query.where('year', '==', year);
     }
 
     if (type) {
-      query += ' AND type = ?';
-      params.push(type);
+      query = query.where('type', '==', type);
     }
 
     if (money_type) {
-      query += ' AND money_type = ?';
-      params.push(money_type);
+      query = query.where('money_type', '==', money_type);
     }
 
-    query += ' ORDER BY date DESC, created_at DESC';
+    // Sort by date desc
+    const snapshot = await query.orderBy('date', 'desc').orderBy('created_at', 'desc').get();
 
-    const result = db.exec(query, params);
-
-    if (result.length === 0) {
-      return res.json([]);
-    }
-
-    const columns = result[0].columns;
-    const transactions = result[0].values.map(row => {
-      const obj = {};
-      columns.forEach((col, i) => { obj[col] = row[i]; });
-      return obj;
-    });
+    const transactions = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
 
     res.json(transactions);
   } catch (err) {
     console.error('Get transactions error:', err);
-    res.status(500).json({ error: 'Terjadi kesalahan server' });
+    res.status(500).json({ error: 'Terjadi kesalahan server. Pastikan index Firestore sudah dibuat.' });
   }
 });
 
 // Add new transaction
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const db = getDb();
     const userId = req.session.userId;
@@ -73,32 +70,28 @@ router.post('/', (req, res) => {
       return res.status(400).json({ error: 'Field wajib harus diisi (type, amount, money_type, date)' });
     }
 
-    if (!['income', 'expense'].includes(type)) {
-      return res.status(400).json({ error: 'Type harus income atau expense' });
-    }
+    const { month, year } = getMonthYear(date);
 
-    if (!['cash', 'digital'].includes(money_type)) {
-      return res.status(400).json({ error: 'Money type harus cash atau digital' });
-    }
+    const newTransaction = {
+      user_id: userId,
+      type,
+      amount: parseFloat(amount),
+      money_type,
+      source: source || '',
+      category: category || 'Lainnya',
+      description: description || '',
+      date,
+      month,
+      year,
+      created_at: new Date().toISOString()
+    };
 
-    if (amount <= 0) {
-      return res.status(400).json({ error: 'Jumlah harus lebih dari 0' });
-    }
-
-    db.run(
-      'INSERT INTO transactions (user_id, type, amount, money_type, source, category, description, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [userId, type, amount, money_type, source || '', category || 'Lainnya', description || '', date]
-    );
-    saveDatabase();
-
-    // Get the inserted transaction
-    const result = db.exec('SELECT * FROM transactions WHERE user_id = ? ORDER BY id DESC LIMIT 1', [userId]);
-    const columns = result[0].columns;
-    const row = result[0].values[0];
-    const transaction = {};
-    columns.forEach((col, i) => { transaction[col] = row[i]; });
-
-    res.json({ success: true, transaction });
+    const docRef = await db.collection('transactions').add(newTransaction);
+    
+    res.json({ 
+      success: true, 
+      transaction: { id: docRef.id, ...newTransaction } 
+    });
   } catch (err) {
     console.error('Add transaction error:', err);
     res.status(500).json({ error: 'Terjadi kesalahan server' });
@@ -106,21 +99,20 @@ router.post('/', (req, res) => {
 });
 
 // Delete transaction
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const db = getDb();
     const userId = req.session.userId;
     const { id } = req.params;
 
-    // Verify ownership
-    const check = db.exec('SELECT id FROM transactions WHERE id = ? AND user_id = ?', [id, userId]);
-    if (check.length === 0 || check[0].values.length === 0) {
+    const docRef = db.collection('transactions').doc(id);
+    const doc = await docRef.get();
+
+    if (!doc.exists || doc.data().user_id !== userId) {
       return res.status(404).json({ error: 'Transaksi tidak ditemukan' });
     }
 
-    db.run('DELETE FROM transactions WHERE id = ? AND user_id = ?', [id, userId]);
-    saveDatabase();
-
+    await docRef.delete();
     res.json({ success: true });
   } catch (err) {
     console.error('Delete transaction error:', err);
@@ -128,8 +120,8 @@ router.delete('/:id', (req, res) => {
   }
 });
 
-// Get summary (total income, expense, balance for current month & all time)
-router.get('/summary', (req, res) => {
+// Get summary
+router.get('/summary', async (req, res) => {
   try {
     const db = getDb();
     const userId = req.session.userId;
@@ -138,70 +130,59 @@ router.get('/summary', (req, res) => {
     const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
     const currentYear = String(now.getFullYear());
 
-    // Monthly totals
-    const monthlyIncome = db.exec(
-      "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id = ? AND type = 'income' AND strftime('%m', date) = ? AND strftime('%Y', date) = ?",
-      [userId, currentMonth, currentYear]
-    );
-    const monthlyExpense = db.exec(
-      "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id = ? AND type = 'expense' AND strftime('%m', date) = ? AND strftime('%Y', date) = ?",
-      [userId, currentMonth, currentYear]
-    );
+    const snapshot = await db.collection('transactions').where('user_id', '==', userId).get();
+    
+    let monthlyIncome = 0;
+    let monthlyExpense = 0;
+    let totalIncome = 0;
+    let totalExpense = 0;
+    let cashIncome = 0;
+    let cashExpense = 0;
+    let digitalIncome = 0;
+    let digitalExpense = 0;
 
-    // All time totals
-    const totalIncome = db.exec(
-      "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id = ? AND type = 'income'",
-      [userId]
-    );
-    const totalExpense = db.exec(
-      "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id = ? AND type = 'expense'",
-      [userId]
-    );
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const amount = data.amount;
 
-    // Cash vs Digital balance
-    const cashIncome = db.exec(
-      "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id = ? AND type = 'income' AND money_type = 'cash'",
-      [userId]
-    );
-    const cashExpense = db.exec(
-      "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id = ? AND type = 'expense' AND money_type = 'cash'",
-      [userId]
-    );
-    const digitalIncome = db.exec(
-      "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id = ? AND type = 'income' AND money_type = 'digital'",
-      [userId]
-    );
-    const digitalExpense = db.exec(
-      "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id = ? AND type = 'expense' AND money_type = 'digital'",
-      [userId]
-    );
+      if (data.type === 'income') {
+        totalIncome += amount;
+        if (data.month === currentMonth && data.year === currentYear) monthlyIncome += amount;
+        if (data.money_type === 'cash') cashIncome += amount;
+        if (data.money_type === 'digital') digitalIncome += amount;
+      } else {
+        totalExpense += amount;
+        if (data.month === currentMonth && data.year === currentYear) monthlyExpense += amount;
+        if (data.money_type === 'cash') cashExpense += amount;
+        if (data.money_type === 'digital') digitalExpense += amount;
+      }
+    });
 
-    const getVal = (r) => (r.length > 0 && r[0].values.length > 0) ? r[0].values[0][0] : 0;
-
-    const summary = {
-      monthlyIncome: getVal(monthlyIncome),
-      monthlyExpense: getVal(monthlyExpense),
-      totalIncome: getVal(totalIncome),
-      totalExpense: getVal(totalExpense),
-      totalBalance: getVal(totalIncome) - getVal(totalExpense),
-      cashBalance: getVal(cashIncome) - getVal(cashExpense),
-      digitalBalance: getVal(digitalIncome) - getVal(digitalExpense),
-    };
-
-    res.json(summary);
+    res.json({
+      monthlyIncome,
+      monthlyExpense,
+      totalIncome,
+      totalExpense,
+      totalBalance: totalIncome - totalExpense,
+      cashBalance: cashIncome - cashExpense,
+      digitalBalance: digitalIncome - digitalExpense,
+    });
   } catch (err) {
     console.error('Summary error:', err);
     res.status(500).json({ error: 'Terjadi kesalahan server' });
   }
 });
 
-// Get chart data (monthly income vs expense for the last 6 months)
-router.get('/chart-data', (req, res) => {
+// Get chart data
+router.get('/chart-data', async (req, res) => {
   try {
     const db = getDb();
     const userId = req.session.userId;
 
-    // Last 6 months
+    const snapshot = await db.collection('transactions').where('user_id', '==', userId).get();
+    const allTransactions = snapshot.docs.map(doc => doc.data());
+
+    // Last 6 months labels
     const months = [];
     const now = new Date();
     for (let i = 5; i >= 0; i--) {
@@ -214,37 +195,32 @@ router.get('/chart-data', (req, res) => {
     }
 
     const chartData = months.map(m => {
-      const incomeResult = db.exec(
-        "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id = ? AND type = 'income' AND strftime('%m', date) = ? AND strftime('%Y', date) = ?",
-        [userId, m.month, m.year]
-      );
-      const expenseResult = db.exec(
-        "SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE user_id = ? AND type = 'expense' AND strftime('%m', date) = ? AND strftime('%Y', date) = ?",
-        [userId, m.month, m.year]
-      );
-
-      const getVal = (r) => (r.length > 0 && r[0].values.length > 0) ? r[0].values[0][0] : 0;
+      const monthlyTrans = allTransactions.filter(t => t.month === m.month && t.year === m.year);
+      const income = monthlyTrans.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+      const expense = monthlyTrans.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
 
       return {
         label: m.label,
-        income: getVal(incomeResult),
-        expense: getVal(expenseResult)
+        income,
+        expense
       };
     });
 
-    // Category breakdown for current month
-    const categoryResult = db.exec(
-      "SELECT category, SUM(amount) as total FROM transactions WHERE user_id = ? AND type = 'expense' AND strftime('%m', date) = ? AND strftime('%Y', date) = ? GROUP BY category ORDER BY total DESC",
-      [userId, String(now.getMonth() + 1).padStart(2, '0'), String(now.getFullYear())]
+    // Category breakdown (current month)
+    const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+    const currentYear = String(now.getFullYear());
+    const currentMonthExpenses = allTransactions.filter(t => 
+      t.type === 'expense' && t.month === currentMonth && t.year === currentYear
     );
 
-    let categories = [];
-    if (categoryResult.length > 0) {
-      categories = categoryResult[0].values.map(row => ({
-        category: row[0],
-        total: row[1]
-      }));
-    }
+    const categoriesMap = {};
+    currentMonthExpenses.forEach(t => {
+      categoriesMap[t.category] = (categoriesMap[t.category] || 0) + t.amount;
+    });
+
+    const categories = Object.keys(categoriesMap)
+      .map(cat => ({ category: cat, total: categoriesMap[cat] }))
+      .sort((a, b) => b.total - a.total);
 
     res.json({ monthly: chartData, categories });
   } catch (err) {

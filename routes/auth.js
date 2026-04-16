@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const { getDb, saveDatabase } = require('../db');
+const { getDb } = require('../db');
 
 // Register
 router.post('/register', async (req, res) => {
@@ -17,29 +17,34 @@ router.post('/register', async (req, res) => {
     }
 
     const db = getDb();
+    if (!db) return res.status(500).json({ error: 'Database not initialized' });
 
     // Check if email already exists
-    const existing = db.exec('SELECT id FROM users WHERE email = ?', [email]);
-    if (existing.length > 0 && existing[0].values.length > 0) {
+    const userRef = db.collection('users').where('email', '==', email);
+    const snapshot = await userRef.get();
+    
+    if (!snapshot.empty) {
       return res.status(400).json({ error: 'Email sudah terdaftar' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    db.run('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, hashedPassword]);
-    saveDatabase();
-
-    // Get the newly created user
-    const result = db.exec('SELECT id, name, email FROM users WHERE email = ?', [email]);
-    const user = {
-      id: result[0].values[0][0],
-      name: result[0].values[0][1],
-      email: result[0].values[0][2]
+    const newUser = {
+      name,
+      email,
+      password: hashedPassword,
+      created_at: new Date().toISOString()
     };
 
-    req.session.userId = user.id;
+    const docRef = await db.collection('users').add(newUser);
+    const userId = docRef.id;
 
-    res.json({ success: true, user });
+    req.session.userId = userId;
+
+    res.json({ 
+      success: true, 
+      user: { id: userId, name, email } 
+    });
   } catch (err) {
     console.error('Register error:', err);
     res.status(500).json({ error: 'Terjadi kesalahan server' });
@@ -56,24 +61,30 @@ router.post('/login', async (req, res) => {
     }
 
     const db = getDb();
-    const result = db.exec('SELECT id, name, email, password FROM users WHERE email = ?', [email]);
+    if (!db) return res.status(500).json({ error: 'Database not initialized' });
 
-    if (result.length === 0 || result[0].values.length === 0) {
+    const userRef = db.collection('users').where('email', '==', email);
+    const snapshot = await userRef.get();
+
+    if (snapshot.empty) {
       return res.status(401).json({ error: 'Email atau password salah' });
     }
 
-    const row = result[0].values[0];
-    const user = { id: row[0], name: row[1], email: row[2] };
-    const hashedPassword = row[3];
+    const userDoc = snapshot.docs[0];
+    const userData = userDoc.data();
+    const userId = userDoc.id;
 
-    const isMatch = await bcrypt.compare(password, hashedPassword);
+    const isMatch = await bcrypt.compare(password, userData.password);
     if (!isMatch) {
       return res.status(401).json({ error: 'Email atau password salah' });
     }
 
-    req.session.userId = user.id;
+    req.session.userId = userId;
 
-    res.json({ success: true, user });
+    res.json({ 
+      success: true, 
+      user: { id: userId, name: userData.name, email: userData.email } 
+    });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: 'Terjadi kesalahan server' });
@@ -91,20 +102,27 @@ router.post('/logout', (req, res) => {
 });
 
 // Get current user
-router.get('/me', (req, res) => {
+router.get('/me', async (req, res) => {
   if (!req.session.userId) {
     return res.status(401).json({ error: 'Belum login' });
   }
 
-  const db = getDb();
-  const result = db.exec('SELECT id, name, email FROM users WHERE id = ?', [req.session.userId]);
+  try {
+    const db = getDb();
+    if (!db) return res.status(500).json({ error: 'Database not initialized' });
 
-  if (result.length === 0 || result[0].values.length === 0) {
-    return res.status(401).json({ error: 'User tidak ditemukan' });
+    const userDoc = await db.collection('users').doc(req.session.userId).get();
+
+    if (!userDoc.exists) {
+      return res.status(401).json({ error: 'User tidak ditemukan' });
+    }
+
+    const userData = userDoc.data();
+    res.json({ id: userDoc.id, name: userData.name, email: userData.email });
+  } catch (err) {
+    console.error('Get user error:', err);
+    res.status(500).json({ error: 'Terjadi kesalahan server' });
   }
-
-  const row = result[0].values[0];
-  res.json({ id: row[0], name: row[1], email: row[2] });
 });
 
 module.exports = router;
