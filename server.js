@@ -38,6 +38,10 @@ app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
+app.get('/history', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'history.html'));
+});
+
 app.get('/add', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'add.html'));
 });

@@ -88,7 +88,7 @@ async function loadDashboard() {
 
     if (txRes.ok) {
       const transactions = await txRes.json();
-      renderTransactions(transactions.slice(0, 10));
+      renderTransactions(transactions.slice(0, 5));
     }
 
   } catch (err) {
@@ -332,7 +332,7 @@ function renderTransactions(transactions) {
           <div class="tx-amount ${typeClass}">${sign}${formatRupiah(tx.amount)}</div>
           <div class="tx-date">${dateStr}</div>
         </div>
-        <button class="tx-delete" onclick="deleteTransaction(${tx.id})" title="Hapus">
+        <button class="tx-delete" onclick="deleteTransaction('${tx.id}')" title="Hapus">
           <span class="material-symbols-outlined" style="font-size:1.1rem;">close</span>
         </button>
       </div>

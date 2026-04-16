@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Danapor — Histori Transaksi</title>
+  <meta name="description" content="Riwayat seluruh transaksi keuangan Anda.">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="material-symbols-outlined brand-icon filled">account_balance_wallet</span>
+      <span class="brand-name">Danapor</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/dashboard" class="nav-link">
+        <span class="material-symbols-outlined" style="font-size:1.1rem;vertical-align:-2px;margin-right:4px;">grid_view</span>
+        Beranda
+      </a>
+      <a href="/history" class="nav-link active">
+        <span class="material-symbols-outlined" style="font-size:1.1rem;vertical-align:-2px;margin-right:4px;">list_alt</span>
+        Histori
+      </a>
+      <a href="/add" class="nav-link">
+        <span class="material-symbols-outlined" style="font-size:1.1rem;vertical-align:-2px;margin-right:4px;">add_circle</span>
+        Tambah
+      </a>
+    </nav>
+    <div class="header-actions">
+      <div class="user-menu">
+        <div class="user-avatar" id="user-avatar" title="Menu Pengguna"></div>
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="user-dropdown-item" id="user-name-display">
+            <span class="material-symbols-outlined">person</span>
+            <span id="dropdown-name">User</span>
+          </div>
+          <button class="user-dropdown-item danger" id="logout-btn">
+            <span class="material-symbols-outlined">logout</span>
+            Keluar
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container container-history" style="max-width: 900px;">
+      
+      <!-- Page Header -->
+      <div class="page-header animate-fade-in" style="margin-bottom: 2rem;">
+        <h2 style="font-size: 2rem; font-weight: 800;">Histori Transaksi</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Semua riwayat pengeluaran dan pemasukan Anda.</p>
+      </div>
+
+      <!-- Filter Controls (In future can add month filters here) -->
+
+      <!-- Transactions List -->
+      <section class="transaction-section animate-fade-in animate-fade-in-delay-1" style="margin-top:0;">
+        <div class="transaction-list" id="transaction-list">
+          <div class="empty-state">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <p>Memuat rekam jejak transaksi...</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FAB (Desktop) -->
+  <a href="/add" class="fab" title="Tambah Transaksi">
+    <span class="material-symbols-outlined">add</span>
+  </a>
+
+  <!-- Bottom Nav (Mobile) -->
+  <nav class="bottom-nav">
+    <a href="/dashboard">
+      <span class="material-symbols-outlined filled">grid_view</span>
+      <span>Beranda</span>
+    </a>
+    <a href="/history" class="active">
+      <span class="material-symbols-outlined filled">list_alt</span>
+      <span>Histori</span>
+    </a>
+    <a href="/add">
+      <span class="material-symbols-outlined">add_circle</span>
+      <span>Tambah</span>
+    </a>
+  </nav>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="material-symbols-outlined toast-icon" id="toast-icon">check_circle</span>
+    <span class="toast-message" id="toast-message"></span>
+  </div>
+
+  <script src="/js/history.js"></script>
+</body>
+</html>
