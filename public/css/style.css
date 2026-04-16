@@ -1527,17 +1527,32 @@ input[type=number] {
 
 /* ---- Mobile Responsiveness ---- */
 @media (max-width: 767px) {
+  .summary-grid {
+    grid-template-columns: 1fr 1fr;
+  }
   .balance-card {
+    grid-column: 1 / -1;
     padding: 1.25rem;
   }
   .balance-card .amount {
     font-size: 2rem;
   }
   .money-type-card {
-    padding: 1.25rem;
+    padding: 1rem;
+  }
+  .money-type-card .card-icon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 0.75rem;
+  }
+  .money-type-card .card-icon .material-symbols-outlined {
+    font-size: 1.2rem;
+  }
+  .money-type-card .card-label {
+    font-size: 0.7rem;
   }
   .money-type-card .card-amount {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
   }
   .chart-container {
     padding: 1.25rem;
