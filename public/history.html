@@ -56,7 +56,15 @@
       </div>
 
       <!-- Filter Controls -->
-      <div class="filter-controls" style="margin-bottom: 1.25rem; display: flex; justify-content: flex-end;">
+      <div class="filter-controls" style="margin-bottom: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: flex-end; align-items: center;">
+        <div class="filter-group" style="display: flex; align-items: center; gap: 0.5rem;">
+          <label for="date-filter" style="font-size: 0.85rem; color: var(--text-muted); white-space: nowrap;">Tanggal:</label>
+          <input type="date" id="date-filter" class="input" style="width: auto; padding: 0.4rem 0.75rem; border-radius: var(--radius-md); font-size: 0.85rem;">
+        </div>
+        <div class="filter-group" style="display: flex; align-items: center; gap: 0.5rem;">
+          <label for="month-filter" style="font-size: 0.85rem; color: var(--text-muted); white-space: nowrap;">Bulan:</label>
+          <input type="month" id="month-filter" class="input" style="width: auto; padding: 0.4rem 0.75rem; border-radius: var(--radius-md); font-size: 0.85rem;">
+        </div>
         <select id="sort-select" class="input" style="width: auto; padding: 0.5rem 2.5rem 0.5rem 1rem; border-radius: var(--radius-md); font-size: 0.85rem; background-position: right 0.75rem center;">
           <option value="newest">Paling Baru</option>
           <option value="oldest">Paling Lama</option>

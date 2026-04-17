@@ -1,16 +1,39 @@
-// ===========================
-// Danapor — Add Transaction Logic
-// ===========================
+const CATEGORIES = {
+  income: [
+    { id: 'Gaji', icon: 'work', label: 'Gaji' },
+    { id: 'Uang Sangu', icon: 'payments', label: 'Uang Sangu' },
+    { id: 'Transfer Bank', icon: 'account_balance', label: 'Transfer Bank' },
+    { id: 'E-Walet', icon: 'account_balance_wallet', label: 'E-Walet' },
+    { id: 'Cash', icon: 'savings', label: 'Cash' },
+    { id: 'Lainnya', icon: 'more_horiz', label: 'Lainnya' }
+  ],
+  expense: [
+    { id: 'Makanan', icon: 'restaurant', label: 'Makanan' },
+    { id: 'Transport', icon: 'commute', label: 'Transport' },
+    { id: 'Belanja', icon: 'shopping_cart', label: 'Belanja' },
+    { id: 'Kesehatan', icon: 'health_and_safety', label: 'Kesehatan' },
+    { id: 'Hiburan', icon: 'sports_esports', label: 'Hiburan' },
+    { id: 'Tagihan', icon: 'receipt_long', label: 'Tagihan' },
+    { id: 'Pendidikan', icon: 'school', label: 'Pendidikan' },
+    { id: 'Lainnya', icon: 'more_horiz', label: 'Lainnya' }
+  ]
+};
+
+const MONEY_SOURCES = {
+  cash: ['Dompet', 'Celengan', 'Kantong', 'Amplop', 'Lainnya'],
+  digital: ['QRIS', 'Bank', 'Dana', 'GoPay', 'OVO', 'ShopeePay', 'Jago', 'Lainnya']
+};
 
 let selectedType = 'income';
 let selectedMoneyType = 'digital';
-let selectedCategory = 'Lainnya';
+let selectedCategory = '';
 
 document.addEventListener('DOMContentLoaded', () => {
   checkAuth();
   setupUserMenu();
   setupToggles();
-  setupCategoryGrid();
+  renderCategories();
+  updateSourceField();
   setupForm();
   setTodayDate();
 });
@@ -95,6 +118,10 @@ function setupToggles() {
         selectedType = btn.dataset.value;
         const activeClass = selectedType === 'income' ? 'active-income' : 'active-expense';
         btn.classList.add(activeClass);
+        
+        // Update labels and categories when type changes
+        updateSourceField();
+        renderCategories();
       });
     });
   }
@@ -121,27 +148,37 @@ function updateSourceField() {
 
   if (!sourceGroup || !sourceLabel || !sourceSelect) return;
 
-  if (selectedMoneyType === 'digital') {
-    sourceLabel.textContent = 'Sumber Digital';
-    sourceSelect.innerHTML = `
-      <option value="">Pilih sumber...</option>
-      <option value="GoPay">GoPay</option>
-      <option value="OVO">OVO</option>
-      <option value="DANA">DANA</option>
-      <option value="ShopeePay">ShopeePay</option>
-      <option value="Bank Transfer">Bank Transfer</option>
-      <option value="Lainnya">Lainnya</option>
-    `;
-  } else {
-    sourceLabel.textContent = 'Sumber Cash';
-    sourceSelect.innerHTML = `
-      <option value="">Pilih sumber...</option>
-      <option value="Dompet">Dompet</option>
-      <option value="Celengan">Celengan</option>
-      <option value="Amplop">Amplop</option>
-      <option value="Lainnya">Lainnya</option>
-    `;
-  }
+  const isIncome = selectedType === 'income';
+  const prefix = isIncome ? 'Penyimpanan' : 'Sumber';
+  const typeLabel = selectedMoneyType === 'digital' ? 'Digital' : 'Cash';
+  
+  sourceLabel.textContent = `${prefix} ${typeLabel}`;
+
+  const options = MONEY_SOURCES[selectedMoneyType];
+  sourceSelect.innerHTML = `
+    <option value="">Pilih ${prefix.toLowerCase()}...</option>
+    ${options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+  `;
+}
+
+function renderCategories() {
+  const categoryGrid = document.getElementById('category-grid');
+  if (!categoryGrid) return;
+
+  const categories = CATEGORIES[selectedType];
+  
+  categoryGrid.innerHTML = categories.map((cat, index) => `
+    <div class="category-item ${index === categories.length - 1 ? 'active' : ''}" data-category="${cat.id}">
+      <span class="material-symbols-outlined">${cat.icon}</span>
+      <span class="cat-label">${cat.label}</span>
+    </div>
+  `).join('');
+
+  // Set default selected category to the last one (Lainnya)
+  selectedCategory = categories[categories.length - 1].id;
+
+  // Re-attach listeners
+  setupCategoryGrid();
 }
 
 function setupCategoryGrid() {

@@ -8,7 +8,31 @@ document.addEventListener('DOMContentLoaded', () => {
   checkAuth();
   setupUserMenu();
   setupSorting();
+  setupFilters();
 });
+
+function setupFilters() {
+  const dateFilter = document.getElementById('date-filter');
+  const monthFilter = document.getElementById('month-filter');
+
+  if (dateFilter) {
+    dateFilter.addEventListener('change', () => {
+      if (dateFilter.value) {
+        monthFilter.value = ''; // Clear month if date is selected
+      }
+      sortAndRender();
+    });
+  }
+
+  if (monthFilter) {
+    monthFilter.addEventListener('change', () => {
+      if (monthFilter.value) {
+        dateFilter.value = ''; // Clear date if month is selected
+      }
+      sortAndRender();
+    });
+  }
+}
 
 async function checkAuth() {
   try {
@@ -89,26 +113,41 @@ function setupSorting() {
 
 function sortAndRender() {
   const sortValue = document.getElementById('sort-select') ? document.getElementById('sort-select').value : 'newest';
+  const dateValue = document.getElementById('date-filter') ? document.getElementById('date-filter').value : '';
+  const monthValue = document.getElementById('month-filter') ? document.getElementById('month-filter').value : '';
   
-  let sorted = [...allTransactions];
+  let filtered = [...allTransactions];
+
+  // Apply Filters
+  if (dateValue) {
+    filtered = filtered.filter(tx => tx.date.startsWith(dateValue));
+  } else if (monthValue) {
+    const [year, month] = monthValue.split('-');
+    filtered = filtered.filter(tx => {
+      const txDate = new Date(tx.date);
+      const txYear = String(txDate.getFullYear());
+      const txMonth = String(txDate.getMonth() + 1).padStart(2, '0');
+      return txYear === year && txMonth === month;
+    });
+  }
   
+  // Apply Sorting
   switch(sortValue) {
     case 'newest':
-      // Backup with created_at if same date
-      sorted.sort((a, b) => new Date(b.date) - new Date(a.date) || new Date(b.created_at) - new Date(a.created_at));
+      filtered.sort((a, b) => new Date(b.date) - new Date(a.date) || new Date(b.created_at) - new Date(a.created_at));
       break;
     case 'oldest':
-      sorted.sort((a, b) => new Date(a.date) - new Date(b.date) || new Date(a.created_at) - new Date(b.created_at));
+      filtered.sort((a, b) => new Date(a.date) - new Date(b.date) || new Date(a.created_at) - new Date(b.created_at));
       break;
     case 'highest':
-      sorted.sort((a, b) => b.amount - a.amount);
+      filtered.sort((a, b) => b.amount - a.amount);
       break;
     case 'lowest':
-      sorted.sort((a, b) => a.amount - b.amount);
+      filtered.sort((a, b) => a.amount - b.amount);
       break;
   }
   
-  renderTransactions(sorted);
+  renderTransactions(filtered);
 }
 
 function formatRupiah(amount) {
@@ -117,6 +156,7 @@ function formatRupiah(amount) {
 }
 
 const categoryIcons = {
+  // Expense
   'Makanan': 'restaurant',
   'Transport': 'commute',
   'Belanja': 'shopping_cart',
@@ -124,7 +164,13 @@ const categoryIcons = {
   'Hiburan': 'sports_esports',
   'Kesehatan': 'health_and_safety',
   'Pendidikan': 'school',
+  // Income
   'Gaji': 'work',
+  'Uang Sangu': 'payments',
+  'Transfer Bank': 'account_balance',
+  'E-Walet': 'account_balance_wallet',
+  'Cash': 'savings',
+  // Common
   'Lainnya': 'more_horiz'
 };
 
