@@ -1,14 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const { getDb, getAppwriteSdk } = require('../db');
-
-function getAppwriteDbInfo() {
-  return {
-    databaseId: process.env.APPWRITE_DATABASE_ID,
-    usersCollectionId: process.env.USERS_COLLECTION_ID,
-  };
-}
+const { getDb } = require('../db');
 
 // Register
 router.post('/register', async (req, res) => {
@@ -23,48 +16,33 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Password minimal 6 karakter' });
     }
 
-    const databases = getDb();
-    const sdk = getAppwriteSdk();
-    if (!databases || !sdk) return res.status(500).json({ error: 'Database not initialized' });
+    const db = getDb();
 
-    const { databaseId, usersCollectionId } = getAppwriteDbInfo();
-
-    // Check if email already exists
-    const snapshot = await databases.listDocuments(
-      databaseId,
-      usersCollectionId,
-      [sdk.Query.equal('email', email)]
-    );
-    
-    if (snapshot.documents.length > 0) {
+    // Cek email sudah terdaftar
+    const [existing] = await db.query('SELECT id FROM users WHERE email = ? LIMIT 1', [email]);
+    if (existing.length > 0) {
       return res.status(400).json({ error: 'Email sudah terdaftar' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = {
-      name,
-      email,
-      password: hashedPassword,
-      created_at: new Date().toISOString()
-    };
-
-    const doc = await databases.createDocument(
-      databaseId,
-      usersCollectionId,
-      sdk.ID.unique(),
-      newUser
+    const [result] = await db.query(
+      'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
+      [name, email, hashedPassword]
     );
-    const userId = doc.$id;
 
+    const userId = result.insertId;
     req.session.userId = userId;
 
-    res.json({ 
-      success: true, 
-      user: { id: userId, name, email } 
+    res.json({
+      success: true,
+      user: { id: userId, name, email }
     });
   } catch (err) {
     console.error('Register error:', err);
+    if (err.code === 'ER_DUP_ENTRY') {
+      return res.status(400).json({ error: 'Email sudah terdaftar' });
+    }
     res.status(500).json({ error: 'Terjadi kesalahan server' });
   }
 });
@@ -78,35 +56,29 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email dan password harus diisi' });
     }
 
-    const databases = getDb();
-    const sdk = getAppwriteSdk();
-    if (!databases || !sdk) return res.status(500).json({ error: 'Database not initialized' });
+    const db = getDb();
 
-    const { databaseId, usersCollectionId } = getAppwriteDbInfo();
-
-    const snapshot = await databases.listDocuments(
-      databaseId,
-      usersCollectionId,
-      [sdk.Query.equal('email', email)]
+    const [rows] = await db.query(
+      'SELECT id, name, email, password FROM users WHERE email = ? LIMIT 1',
+      [email]
     );
 
-    if (snapshot.documents.length === 0) {
+    if (rows.length === 0) {
       return res.status(401).json({ error: 'Email atau password salah' });
     }
 
-    const userDoc = snapshot.documents[0];
-    const userId = userDoc.$id;
+    const user = rows[0];
 
-    const isMatch = await bcrypt.compare(password, userDoc.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ error: 'Email atau password salah' });
     }
 
-    req.session.userId = userId;
+    req.session.userId = user.id;
 
-    res.json({ 
-      success: true, 
-      user: { id: userId, name: userDoc.name, email: userDoc.email } 
+    res.json({
+      success: true,
+      user: { id: user.id, name: user.name, email: user.email }
     });
   } catch (err) {
     console.error('Login error:', err);
@@ -127,18 +99,18 @@ router.get('/me', async (req, res) => {
   }
 
   try {
-    const databases = getDb();
-    if (!databases) return res.status(500).json({ error: 'Database not initialized' });
-
-    const { databaseId, usersCollectionId } = getAppwriteDbInfo();
-
-    const userDoc = await databases.getDocument(
-      databaseId,
-      usersCollectionId,
-      req.session.userId
+    const db = getDb();
+    const [rows] = await db.query(
+      'SELECT id, name, email FROM users WHERE id = ? LIMIT 1',
+      [req.session.userId]
     );
 
-    res.json({ id: userDoc.$id, name: userDoc.name, email: userDoc.email });
+    if (rows.length === 0) {
+      return res.status(401).json({ error: 'Belum login' });
+    }
+
+    const user = rows[0];
+    res.json({ id: user.id, name: user.name, email: user.email });
   } catch (err) {
     console.error('Get user error:', err);
     res.status(500).json({ error: 'Terjadi kesalahan server' });

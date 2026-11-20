@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cookieSession = require('cookie-session');
 const path = require('path');
@@ -11,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieSession({
   name: 'session',
-  keys: ['danapor-secret-key-2024'],
+  keys: [process.env.SESSION_SECRET || 'danapor-secret-key-2024'],
   maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
 }));
 
