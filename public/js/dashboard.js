@@ -5,10 +5,50 @@
 let barChart = null;
 let donutChart = null;
 
+let amountsHidden = localStorage.getItem('amountsHidden') === 'true';
+
 document.addEventListener('DOMContentLoaded', () => {
   checkAuth();
   setupUserMenu();
+  setupAmountToggle();
 });
+
+// ===========================
+// Sembunyikan / tampilkan nominal
+// ===========================
+function setupAmountToggle() {
+  const btn = document.getElementById('toggle-amounts');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    amountsHidden = !amountsHidden;
+    localStorage.setItem('amountsHidden', amountsHidden);
+    applyAmountVisibility();
+  });
+  applyAmountVisibility();
+}
+
+// Terapkan status ke semua elemen nominal. Panggil ulang tiap selesai render.
+function applyAmountVisibility() {
+  const btn = document.getElementById('toggle-amounts');
+  const icon = document.getElementById('eye-icon');
+
+  document.querySelectorAll('.amount-value').forEach(el => {
+    // Simpan nilai asli terbaru saat sedang tampil, agar bisa dikembalikan.
+    if (!amountsHidden) {
+      el.dataset.real = el.textContent;
+    } else if (el.dataset.real === undefined) {
+      el.dataset.real = el.textContent;
+    }
+    el.textContent = amountsHidden ? 'Rp ••••••' : el.dataset.real;
+  });
+
+  if (icon) icon.textContent = amountsHidden ? 'visibility_off' : 'visibility';
+  if (btn) {
+    const label = amountsHidden ? 'Tampilkan nominal' : 'Sembunyikan nominal';
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+  }
+}
 
 async function checkAuth() {
   try {
@@ -107,6 +147,7 @@ function renderSummary(summary) {
   document.getElementById('monthly-expense').textContent = '-' + formatRupiah(summary.monthlyExpense);
   document.getElementById('digital-balance').textContent = formatRupiah(summary.digitalBalance);
   document.getElementById('cash-balance').textContent = formatRupiah(summary.cashBalance);
+  applyAmountVisibility();
 }
 
 function renderBarChart(monthly) {
@@ -162,7 +203,7 @@ function renderBarChart(monthly) {
           cornerRadius: 8,
           padding: 12,
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               return context.dataset.label + ': ' + formatRupiah(context.parsed.y);
             }
           }
@@ -184,7 +225,7 @@ function renderBarChart(monthly) {
           ticks: {
             color: '#64748b',
             font: { size: 11, family: 'DM Sans' },
-            callback: function(value) {
+            callback: function (value) {
               if (value >= 1000000) return 'Rp ' + (value / 1000000).toFixed(1) + 'jt';
               if (value >= 1000) return 'Rp ' + (value / 1000).toFixed(0) + 'rb';
               return 'Rp ' + value;
@@ -274,7 +315,7 @@ function renderDonutChart(categories) {
           cornerRadius: 8,
           padding: 12,
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               return context.label + ': ' + formatRupiah(context.parsed);
             }
           }
@@ -334,7 +375,7 @@ function renderTransactions(transactions) {
           <div class="tx-meta">${moneyLabel}${sourceLabel} • ${tx.category}</div>
         </div>
         <div class="tx-right">
-          <div class="tx-amount ${typeClass}">${sign}${formatRupiah(tx.amount)}</div>
+          <div class="tx-amount amount-value ${typeClass}">${sign}${formatRupiah(tx.amount)}</div>
           <div class="tx-date">${dateStr}</div>
         </div>
         <button class="tx-delete" onclick="deleteTransaction('${tx.id}')" title="Hapus">
@@ -343,6 +384,8 @@ function renderTransactions(transactions) {
       </div>
     `;
   }).join('');
+
+  applyAmountVisibility();
 }
 
 async function deleteTransaction(id) {
