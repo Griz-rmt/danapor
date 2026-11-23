@@ -27,19 +27,29 @@ function setupAmountToggle() {
   applyAmountVisibility();
 }
 
-// Terapkan status ke semua elemen nominal. Panggil ulang tiap selesai render.
+// Set nilai nominal asli ke sebuah elemen. Nilai asli disimpan di data-real,
+// lalu ditampilkan atau disamarkan sesuai status. Ini SATU-SATUNYA tempat
+// yang menulis data-real, jadi titik penyamaran tidak akan pernah tersimpan.
+function setAmount(el, realText) {
+  if (!el) return;
+  el.dataset.real = realText;
+  el.textContent = amountsHidden ? 'Rp ••••••' : realText;
+}
+
+// Terapkan status sembunyi/tampil ke semua nominal berdasarkan data-real.
+// Fungsi ini TIDAK pernah menulis data-real dari textContent.
 function applyAmountVisibility() {
   const btn = document.getElementById('toggle-amounts');
   const icon = document.getElementById('eye-icon');
 
   document.querySelectorAll('.amount-value').forEach(el => {
-    // Simpan nilai asli terbaru saat sedang tampil, agar bisa dikembalikan.
-    if (!amountsHidden) {
-      el.dataset.real = el.textContent;
-    } else if (el.dataset.real === undefined) {
+    // Kalau belum punya nilai asli tersimpan, pakai teks saat ini sebagai asal
+    // HANYA jika sedang tampil (bukan titik).
+    if (el.dataset.real === undefined && !amountsHidden) {
       el.dataset.real = el.textContent;
     }
-    el.textContent = amountsHidden ? 'Rp ••••••' : el.dataset.real;
+    const real = el.dataset.real !== undefined ? el.dataset.real : el.textContent;
+    el.textContent = amountsHidden ? 'Rp ••••••' : real;
   });
 
   if (icon) icon.textContent = amountsHidden ? 'visibility_off' : 'visibility';
@@ -142,12 +152,11 @@ function formatRupiah(amount) {
 }
 
 function renderSummary(summary) {
-  document.getElementById('total-balance').textContent = formatRupiah(summary.totalBalance);
-  document.getElementById('monthly-income').textContent = '+' + formatRupiah(summary.monthlyIncome);
-  document.getElementById('monthly-expense').textContent = '-' + formatRupiah(summary.monthlyExpense);
-  document.getElementById('digital-balance').textContent = formatRupiah(summary.digitalBalance);
-  document.getElementById('cash-balance').textContent = formatRupiah(summary.cashBalance);
-  applyAmountVisibility();
+  setAmount(document.getElementById('total-balance'), formatRupiah(summary.totalBalance));
+  setAmount(document.getElementById('monthly-income'), '+' + formatRupiah(summary.monthlyIncome));
+  setAmount(document.getElementById('monthly-expense'), '-' + formatRupiah(summary.monthlyExpense));
+  setAmount(document.getElementById('digital-balance'), formatRupiah(summary.digitalBalance));
+  setAmount(document.getElementById('cash-balance'), formatRupiah(summary.cashBalance));
 }
 
 function renderBarChart(monthly) {
@@ -375,7 +384,7 @@ function renderTransactions(transactions) {
           <div class="tx-meta">${moneyLabel}${sourceLabel} • ${tx.category}</div>
         </div>
         <div class="tx-right">
-          <div class="tx-amount amount-value ${typeClass}">${sign}${formatRupiah(tx.amount)}</div>
+          <div class="tx-amount amount-value ${typeClass}" data-real="${sign}${formatRupiah(tx.amount)}">${sign}${formatRupiah(tx.amount)}</div>
           <div class="tx-date">${dateStr}</div>
         </div>
         <button class="tx-delete" onclick="deleteTransaction('${tx.id}')" title="Hapus">
